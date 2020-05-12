@@ -1,0 +1,27 @@
+.datainfo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.infobox {
+  width: 100%;
+}
+
+.nav {
+  display: flex;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.nav span {
+  display: inline-block;
+  padding: 6px 10px;
+  margin-left: 1rem;
+  border-radius: 50%;
+  background-color: #fcfcfc;
+  cursor: pointer;
+}
+
+.nav span:first-child {
+  margin-left: 0;
+}
