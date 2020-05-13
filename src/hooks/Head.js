@@ -5,6 +5,7 @@ import Profile from '../pages/Profile';
 import OutLook from '../pages/OutLook';
 import OneDriveNesting from './OneDriveNesting';
 import microContext from '../utils/Context';
+import { Logout } from '../utils/Login';
 import { ArrayBufferToBase64 } from '../utils/Func';
 import css from '../assets/css/Head.module.css';
 
@@ -63,6 +64,7 @@ function Head() {
                   </li>
                 </NavLink>
               </ul>
+              <p className={css.logout} onClick={Logout}>LOGOUT</p>
             </header >
             <div className={css.page}>
               <Switch>

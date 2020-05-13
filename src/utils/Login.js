@@ -1,7 +1,13 @@
 import * as Msal from "msal";
-import { config } from '../config';
+import config from '../config';
 
-const msalInstance = new Msal.UserAgentApplication(config.msal);
+const msalInstance = new Msal.UserAgentApplication({
+  auth: {
+    clientId: config.appId,
+    redirectUri: config.redirectUri
+  }
+});
+
 const tokenRequest = {
   scopes: ["user.read"]
 };
@@ -15,48 +21,52 @@ export function Login() {
   }
 }
 
-function init() {
-  console.log('初始化 ...');
+export function Logout() {
+  msalInstance.logout();
+}
+
+async function init() {
   sessionStorage.clear();
-  msalInstance.loginPopup()
-    .catch(err => {
-      alert(err);
-    });
-  return accessToken();
+  try {
+    console.log('初始化 ...');
+    await msalInstance.loginPopup()
+    console.log(msalInstance.getAccount());
+    await accessToken();
+  }
+  catch (err) {
+    let error = {};
+
+    if (typeof (err) === 'string') {
+      let errParts = err.split('|');
+      error = errParts.length > 1
+        ?
+        { message: errParts[1], debug: errParts[0] }
+        :
+        { message: err };
+    } else {
+      error = {
+        message: err.message,
+        debug: JSON.stringify(err)
+      };
+    }
+
+    return Promise.reject({
+      fn: 'loginPopup',
+      err: error
+    })
+  }
 }
 
 function accessToken() {
-  console.log('Token:');
-  if (msalInstance.getAccount()) {
-    console.log('尝试获取 Token 1 ...');
-    return msalInstance.acquireTokenSilent(tokenRequest)
-      .then(res => {
-        console.log('尝试获取 Token 1 ...ok');
-        return res.accessToken;
-      })
-      .catch(err => {
-        console.log('尝试获取 Token 2 ...');
-        if (err.name === "InteractionRequiredAuthError") {
-          return msalInstance.acquireTokenPopup(tokenRequest)
-            .then(res => {
-              console.log('尝试获取 Token 2 ...ok');
-              return res.accessToken;
-            })
-            .catch(err => {
-              console.log('获取失败 Token ...');
-              console.log(err);
-            });
-        }
-      })
-  } else {
-    console.log('尝试刷新 ...')
-    console.log('reload ... 1s');
-    let timer = null;
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      console.log('reload ...');
-      window.location.reload()
-    }, 1000);
-    return new Promise(() => '', () => '');
-  }
+  return msalInstance.acquireTokenSilent(tokenRequest)
+    .then(res => res.accessToken)
+    .catch(err => {
+      if (err.name === "InteractionRequiredAuthError") {
+        return msalInstance.acquireTokenPopup(tokenRequest)
+          .then(res => res.accessToken)
+          .catch(err => {
+            console.log(err);
+          });
+      }
+    })
 }

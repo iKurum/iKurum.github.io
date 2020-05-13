@@ -2,6 +2,7 @@
   "name": "sakura",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
   "dependencies": {
     "msal": "1.3.0",
     "react": "^16.13.1",

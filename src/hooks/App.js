@@ -15,7 +15,6 @@ function GetToken() {
 
   const getToken = useCallback(() => {
     Login().then(t => {
-      console.log('写入 Token ...');
       change(SetToken, t);
     }).catch(err => {
       console.log(err);
@@ -27,8 +26,8 @@ function GetToken() {
       getToken();
     } else {
       Login()
-        .then(d => {
-          console.log(d);
+        .then(() => {
+          getToken();
         })
         .catch(err => {
           console.log(err);
