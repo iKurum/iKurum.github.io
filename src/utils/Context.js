@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-const microContext = createContext(null);
+const tokenContext = createContext(null);
 
 
-export default microContext;
+export default tokenContext;

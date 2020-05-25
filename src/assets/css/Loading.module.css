@@ -1,0 +1,55 @@
+.loading {
+  width: 40rem;
+  height: 10rem;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-image: linear-gradient(to left, #66ccff, rgb(209, 133, 228), rgb(233, 34, 34), rgb(209, 133, 228), #66ccff);
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  animation: maskedAnimation 4s infinite linear;
+  background-clip: text;
+  color: transparent;
+  font-size: 4rem;
+  letter-spacing: 10px;
+  text-align: center;
+  line-height: 10rem;
+  z-index: 2;
+}
+
+.wall {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  user-select: none;
+  filter: blur(2px);
+  z-index: 1;
+  animation: FilterAnimation 5s infinite linear;
+}
+
+@keyframes maskedAnimation {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes FilterAnimation {
+  0% {
+    filter: blur(2px);
+  }
+
+  50% {
+    filter: blur(0);
+  }
+
+  100% {
+    filter: blur(2px);
+  }
+}

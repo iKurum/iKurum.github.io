@@ -80,4 +80,15 @@ function FolderIcon(data) {
   }
 }
 
-export { ByteConvert, ArrayBufferToBase64, FolderIcon };
+function SearchURL(search) {
+  let s = {};
+  const searchURL = search.substring(1, search.length);
+  const target = searchURL.split('&');
+  for (let i = 0; i < target.length; i++) {
+    const t = target[i].split('=');
+    s[t[0]] = t[1];
+  };
+  return s;
+}
+
+export { ByteConvert, ArrayBufferToBase64, FolderIcon, SearchURL };

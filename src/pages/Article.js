@@ -1,11 +1,11 @@
 import React from 'react';
 
-function Home() {
+function Article() {
   return (
     <>
-      Home
+      Article
     </>
   );
 }
 
-export default Home;
+export default Article;

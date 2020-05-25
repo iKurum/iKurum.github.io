@@ -1,17 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import microContext from '../utils/Context';
-import { ByteConvert } from '../utils/Func';
+import Loading from '../hooks/Loading';
 import Folder from '../hooks/Folder';
+import GetInfo from '../utils/GetInfo';
+import tokenContext from '../utils/Context';
 import css from '../assets/css/OneDrive.module.css';
 
 function OneDrive() {
-  const { micro, change } = useContext(microContext);
-  const [data, SetData] = useState({});
-  const [folderData, SetFolderData] = useState([]);
+  const [folderData, setFolderData] = useState([]);
   const { pathname } = useLocation();
   const history = useHistory();
+  const childRef = useRef();
+  const { change, token } = useContext(tokenContext);
 
+  // 导航跳转
   function goto(i) {
     return () => {
       const a = '/' + pathname.split('/').slice(1, pathname.split('/').length).slice(0, i).join('/');
@@ -20,24 +22,20 @@ function OneDrive() {
   }
 
   useEffect(() => {
-    if (micro.url) {
-      micro.url(`/me/drive/root${!!pathname.substring(9) ? `:${pathname.substring(9)}` : ''}`, 'json')
+    if (token) {
+      childRef.current.isNotOk();
+      GetInfo(`${!!pathname.substring(9) ? `${pathname.substring(9)}:` : ':'}/children`, 'json', token, 'onedrive')
         .then(d => {
-          change(SetData, d);
+          change(setFolderData, d.value);
+        })
+        .then(() => {
+          childRef.current.isOk();
         })
         .catch(err => {
-          alert(err);
-        });
-
-      micro.url(`/me/drive/root${!!pathname.substring(9) ? `:${pathname.substring(9)}:` : ''}/children`, 'json')
-        .then(d => {
-          change(SetFolderData, d.value);
-        })
-        .catch(err => {
-          alert(err);
+          console.log(err);
         });
     }
-  }, [micro, change, pathname])
+  }, [change, pathname, token])
 
   return (
     <>
@@ -51,36 +49,11 @@ function OneDrive() {
           })
         }
       </p>
-      {
-        data.fileSystemInfo
-          ?
-          <div className={css.infobox}>
-            <p className={css.datainfo}>
-              <span>
-                创建时间：
-                {data.fileSystemInfo.createdDateTime.slice(0, 10)}
-              </span>
-              <span>
-                上次修改时间：
-                {data.fileSystemInfo.lastModifiedDateTime.slice(0, 10)}
-              </span>
-              <span>
-                已使用空间：
-                {ByteConvert(data.size)}
-              </span>
-            </p>
-            <hr />
-          </div>
-          :
-          <>加载中 ...</>
-      }
-      {
-        folderData.length > 0
-          ?
-          <Folder value={folderData} />
-          :
-          <>加载中 ...</>
-      }
+      <Folder
+        value={folderData}
+        loading={childRef}
+      />
+      <Loading ref={childRef} cRef={childRef} />
     </>
   );
 }
